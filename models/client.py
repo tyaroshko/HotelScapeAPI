@@ -1,7 +1,4 @@
-from typing import Text
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
-from reservation import Reservation
+from sqlalchemy import Column, Integer, String
 
 from db import Base
 
