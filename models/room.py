@@ -29,6 +29,6 @@ class RoomType(Base):
     number_of_beds = Column(Enum(NumberOfBeds))
     satelite_tv = Column(Boolean, default=False)
     minibar = Column(Boolean, default=False)
-    air_conditiong_or_fan_cooling = Column(Boolean, default=False)
+    conditioner_or_fan = Column(Boolean, default=False)
     in_room_safe = Column(Boolean, default=False)
     tea_coffee_making = Column(Boolean, default=False)
