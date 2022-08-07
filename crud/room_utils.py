@@ -3,12 +3,8 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from models.room import Facility, Feature, Room, RoomType
-from schemas.room_schemas import (
-    FacilityCreate,
-    FeatureCreate,
-    RoomCreate,
-    RoomTypeCreate,
-)
+from schemas.room_schemas import (FacilityCreate, FeatureCreate, RoomCreate,
+                                  RoomTypeCreate)
 
 # Room CRUD
 
