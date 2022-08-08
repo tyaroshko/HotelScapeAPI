@@ -1,46 +1,86 @@
+"""Room, RoomType, Facility, Feature, FeatureToRoomType models."""
 import enum
 
-from sqlalchemy import (
-    Boolean,
-    Column,
-    ForeignKey,
-    Integer,
-    String,
-    Float,
-    Enum,
-)
+from sqlalchemy import (CheckConstraint, Column, Enum, Float, ForeignKey,
+                        Integer, String)
 
 from db import Base
 
 
+class NumberOfBeds(str, enum.Enum):
+    """Possible options for NumberOfBeds."""
+
+    single_bed = "single_bed"
+    double_beds = "double_beds"
+    twin_beds = "twin_beds"
+    king_size_bed = "king_size_bed"
+
+
+class RoomBookingStatus(str, enum.Enum):
+    """Possible options for RoomBookingStatus."""
+
+    vacant = "vacant"
+    booked = "booked"
+    occupied = "occupied"
+
+
+class RoomCleanlinessStatus(str, enum.Enum):
+    """Possible options for RoomCleanlinessStatus."""
+
+    clean = "clean"
+    dirty = "dirty"
+
+
 class Room(Base):
+    """Room class -> creating 'rooms' table."""
+
     __tablename__ = "rooms"
 
     id = Column(Integer, primary_key=True, index=True, unique=True)
-    description = Column(String)
-    room_type_id = Column(Integer, ForeignKey("room_types.id"), nullable=False)
-    room_type_name = Column(
-        String, ForeignKey("room_types.name"), nullable=False
-    )
-    current_price = Column(Float, nullable=False)
-    # is_free = Column(Boolean, default=False)
+    description = Column(String, default="")
+    room_type_id = Column(Integer, ForeignKey("room_types.id"))
+    floor = Column(Integer, CheckConstraint("floor>0"), nullable=False)
+    facility_id = Column(Integer, ForeignKey("facilities.id"))
+    booking_status = Column(Enum(RoomBookingStatus))
+    cleanliness_status = Column(Enum(RoomCleanlinessStatus))
 
 
-class NumberOfBeds(enum.Enum):
-    single_bed = 1
-    double_beds = 2
-    twin_beds = 3
-    king_size_bed = 4
+class Facility(Base):
+    """Facility class -> creating 'facility' table."""
+
+    __tablename__ = "facilities"
+
+    id = Column(Integer, primary_key=True, index=True, unique=True)
+    name = Column(String, nullable=False)
 
 
 class RoomType(Base):
+    """RoomType class -> creating 'room_types' table."""
+
     __tablename__ = "room_types"
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
+    id = Column(Integer, primary_key=True, index=True, unique=True)
+    name = Column(String, nullable=False)
     number_of_beds = Column(Enum(NumberOfBeds))
-    satelite_tv = Column(Boolean, default=False)
-    minibar = Column(Boolean, default=False)
-    conditioner_or_fan = Column(Boolean, default=False)
-    in_room_safe = Column(Boolean, default=False)
-    tea_coffee_making = Column(Boolean, default=False)
+    capacity = Column(String, nullable=False, default="1")
+    price = Column(Float, index=True)
+
+
+class Feature(Base):
+    """Facility class -> creating 'facility' table."""
+
+    __tablename__ = "features"
+
+    id = Column(Integer, primary_key=True, index=True, unique=True)
+    name = Column(String, nullable=False)
+
+
+class FeatureToRoomType(Base):
+    """Creates many-to-many relationship between features and room_types."""
+
+    __tablename__ = "features_to_room_types"
+
+    room_type_id = Column(
+        Integer, ForeignKey("room_types.id"), primary_key=True
+    )
+    feature_id = Column(Integer, ForeignKey("features.id"), primary_key=True)
