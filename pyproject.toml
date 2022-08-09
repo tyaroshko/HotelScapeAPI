@@ -14,6 +14,9 @@ psycopg2-binary = "^2.9.3"
 databases = "^0.6.0"
 alembic = "^1.8.1"
 SQLAlchemy-Utils = "^0.38.3"
+python-jose = "^3.3.0"
+python-multipart = "^0.0.5"
+bcrypt = "^3.2.2"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^5.0.1"
