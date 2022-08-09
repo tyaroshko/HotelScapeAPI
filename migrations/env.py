@@ -5,7 +5,7 @@ from sqlalchemy import engine_from_config, pool
 
 from db import (POSTGRES_DATABASE, POSTGRES_PASSWORD, POSTGRES_SERVER,
                 POSTGRES_USER, Base)
-from models import booking, client, room, invoice
+from models import booking, client, invoice, room, user
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
