@@ -1,8 +1,15 @@
 """Room, RoomType, Facility, Feature, FeatureToRoomType models."""
 import enum
 
-from sqlalchemy import (CheckConstraint, Column, Enum, Float, ForeignKey,
-                        Integer, String)
+from sqlalchemy import (
+    CheckConstraint,
+    Column,
+    Enum,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+)
 
 from db import Base
 

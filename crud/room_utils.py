@@ -3,13 +3,19 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from models.room import Facility, Feature, Room, RoomType
-from schemas.room_schemas import (FacilityCreate, FeatureCreate, RoomCreate,
-                                  RoomTypeCreate)
+from schemas.room_schemas import (
+    FacilityCreate,
+    FeatureCreate,
+    RoomCreate,
+    RoomTypeCreate,
+    RoomTypeUpdate,
+    RoomUpdate,
+)
 
 # Room CRUD
 
 
-def get_rooms(db: Session, skip: int = 0, limit: int = 500):
+def get_rooms(db: Session, skip: int = 0, limit: int = 100):
     """Get all rooms."""
     return db.query(Room).offset(skip).limit(limit).all()
 
@@ -26,6 +32,16 @@ def get_room(db: Session, room_id: int):
 
 def create_room(db: Session, room: RoomCreate):
     """Create new room."""
+    if not get_room_type(db=db, room_type_id=room.room_type_id):
+        raise HTTPException(
+            status_code=404,
+            detail=f"No room type with id {room.room_type_id} found",
+        )
+    if not get_facility(db=db, facility_id=room.facility_id):
+        raise HTTPException(
+            status_code=404,
+            detail=f"No facility with id {room.facility_id} found",
+        )
     _room = Room(
         id=room.id,
         description=room.description,
@@ -41,19 +57,35 @@ def create_room(db: Session, room: RoomCreate):
     return _room
 
 
-def update_room(db: Session, room_id: int, room: RoomCreate):
+def update_room(db: Session, room_id: int, room: RoomUpdate):
     """Update existing room."""
     _room = get_room(db=db, room_id=room_id)
     if not _room:
         raise HTTPException(
             status_code=404, detail=f"No room found with id {room_id}"
         )
-    _room.description = room.description
-    _room.room_type_id = room.room_type_id
-    _room.floor = room.floor
-    _room.facility_id = room.facility_id
-    _room.booking_status = room.booking_status
-    _room.cleanliness_status = room.cleanliness_status
+    if room.description:
+        _room.description = room.description
+    if room.room_type_id:
+        if not get_room_type(db=db, room_type_id=room.room_type_id):
+            raise HTTPException(
+                status_code=404,
+                detail=f"No room type found with id {room.room_type_id}",
+            )
+        _room.room_type_id = room.room_type_id
+    if room.floor:
+        _room.floor = room.floor
+    if room.facility_id:
+        if not get_facility(db=db, facility_id=room.facility_id):
+            raise HTTPException(
+                status_code=404,
+                detail=f"No facility found with id {room.facility_id}",
+            )
+        _room.facility_id = room.facility_id
+    if room.booking_status:
+        _room.booking_status = room.booking_status
+    if room.cleanliness_status:
+        _room.cleanliness_status = room.cleanliness_status
     db.commit()
     db.refresh(_room)
     return _room
@@ -68,7 +100,7 @@ def delete_room(db: Session, room_id: int):
         )
     db.delete(_room)
     db.commit()
-    return f"Deleted room with id {room_id}"
+    return f"Successfully deleted room with id {room_id}"
 
 
 def get_room_booking_status(db: Session, room_id: int):
@@ -122,7 +154,7 @@ def create_room_type(db: Session, room_type: RoomTypeCreate):
 
 
 def update_room_type(
-    db: Session, room_type_id: int, room_type: RoomTypeCreate
+    db: Session, room_type_id: int, room_type: RoomTypeUpdate
 ):
     """Update an existing room type."""
     _room_type = get_room_type(db=db, room_type_id=room_type_id)
@@ -131,9 +163,12 @@ def update_room_type(
             status_code=404,
             detail=f"No room type found with id {room_type_id}",
         )
-    _room_type.name = room_type.name
-    _room_type.capacity = room_type.capacity
-    _room_type.price = room_type.price
+    if room_type.name:
+        _room_type.name = room_type.name
+    if room_type.capacity:
+        _room_type.capacity = room_type.capacity
+    if room_type.price:
+        _room_type.price = room_type.price
     db.commit()
     db.refresh(_room_type)
     return _room_type
@@ -149,15 +184,10 @@ def delete_room_type(db: Session, room_type_id: int):
         )
     db.delete(_room_type)
     db.commit()
-    return _room_type
+    return f"Successfully deleted room type with id {room_type_id}"
 
 
 # Room features CRUD
-
-
-def get_features(db: Session, skip: int = 0, limit: int = 100):
-    """Get all features."""
-    return db.query(Feature).offset(skip).limit(limit).all()
 
 
 def get_feature(db: Session, feature_id: int):
@@ -167,6 +197,7 @@ def get_feature(db: Session, feature_id: int):
         raise HTTPException(
             status_code=404, detail=f"No feature found with id {feature_id}"
         )
+    return _feature
 
 
 def create_feature(db: Session, feature: FeatureCreate):
@@ -185,7 +216,8 @@ def update_feature(db: Session, feature_id: int, feature: FeatureCreate):
         raise HTTPException(
             status_code=404, detail=f"No feature found with id {feature_id}"
         )
-    _feature.name = feature.name
+    if feature.name:
+        _feature.name = feature.name
     db.commit()
     db.refresh(_feature)
     return _feature
@@ -200,7 +232,7 @@ def delete_feature(db: Session, feature_id: int):
         )
     db.delete(_feature)
     db.commit()
-    return _feature
+    return f"Successfully deleted feature with id {feature_id}"
 
 
 # Facility CRUD
@@ -221,7 +253,7 @@ def get_facility(db: Session, facility_id: int):
 
 
 def create_facility(db: Session, facility: FacilityCreate):
-    """Create new feature."""
+    """Create new facility."""
     _facility = Facility(name=facility.name)
     db.add(_facility)
     db.commit()
@@ -230,20 +262,21 @@ def create_facility(db: Session, facility: FacilityCreate):
 
 
 def update_facility(db: Session, facility_id: int, facility: FeatureCreate):
-    """Update an existing feature."""
+    """Update an existing facility."""
     _facility = get_facility(db=db, facility_id=facility_id)
     if not _facility:
         raise HTTPException(
             status_code=404, detail=f"No facility found with id {facility_id}"
         )
-    _facility.name = facility.name
+    if facility.name:
+        _facility.name = facility.name
     db.commit()
     db.refresh(_facility)
     return _facility
 
 
 def delete_facility(db: Session, facility_id: int):
-    """Delete an existing feature."""
+    """Delete an existing facility."""
     _facility = get_facility(db=db, facility_id=facility_id)
     if not _facility:
         raise HTTPException(
@@ -251,7 +284,4 @@ def delete_facility(db: Session, facility_id: int):
         )
     db.delete(_facility)
     db.commit()
-    return _facility
-
-
-# Crossover CRUD
+    return f"Successfully deleted facility with id {facility_id}"

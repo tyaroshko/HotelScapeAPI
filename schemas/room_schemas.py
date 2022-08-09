@@ -1,5 +1,6 @@
 """Schemas for models associated with Room."""
-from typing import Optional
+
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -34,6 +35,16 @@ class RoomCreate(RoomBase):
 
 
 class RoomFilter(BaseModel):
+    id: Optional[int]
+    description: Optional[str]
+    room_type_id: Optional[int]
+    floor: Optional[int]
+    facility_id: Optional[int]
+    booking_status: Optional[RoomBookingStatus]
+    cleanliness_status: Optional[RoomCleanlinessStatus]
+
+
+class RoomUpdate(BaseModel):
     description: Optional[str]
     room_type_id: Optional[int]
     floor: Optional[int]
@@ -64,6 +75,13 @@ class RoomTypeCreate(RoomTypeBase):
 
 
 class RoomTypeFilter(BaseModel):
+    id: Optional[int]
+    name: Optional[str]
+    capacity: Optional[str]
+    price: Optional[float]
+
+
+class RoomTypeUpdate(BaseModel):
     name: Optional[str]
     capacity: Optional[str]
     price: Optional[float]
@@ -92,6 +110,14 @@ class FeatureFilter(BaseModel):
     name: Optional[str]
 
 
+class FeatureUpdate(BaseModel):
+    name: Optional[str]
+
+
+class FeatureList(BaseModel):
+    list_of_features: List[FeatureFull]
+
+
 # Facility schemas
 
 
@@ -112,4 +138,8 @@ class FacilityCreate(FacilityBase):
 
 
 class FacilityFilter(BaseModel):
+    name: Optional[str]
+
+
+class FacilityUpdate(BaseModel):
     name: Optional[str]
