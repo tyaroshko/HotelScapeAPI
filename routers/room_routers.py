@@ -294,7 +294,8 @@ def create_room_type(room_type: RoomTypeCreate, db: Session = Depends(get_db)):
         Current database
 
     room_type : RoomTypeCreate
-        RoomTypeCreate object with all the necessary data to create a new room type
+        RoomTypeCreate object with all the necessary data
+        to create a new room type
 
     Returns
     -------
@@ -322,7 +323,8 @@ def update_room_type(
         Current database
 
     room_type : RoomTypeUpdate
-        RoomTypeUpdate object with all the optional data to update for the room type
+        RoomTypeUpdate object with all the optional data
+        to update for the room type
     room_id : int
         ID of the room to update
 
@@ -408,7 +410,8 @@ def create_feature(feature: FeatureCreate, db: Session = Depends(get_db)):
         Current database
 
     feature : FeatureCreate
-        FeatureCreate object with all the necessary data to create a new room type
+        FeatureCreate object with all the necessary data
+        to create a new room type
 
     Returns
     -------
@@ -436,7 +439,8 @@ def update_feature(
         Current database
 
     feature : FeatureUpdate
-        RoomTypeUpdate object with all the optional data to update for the room type
+        RoomTypeUpdate object with all the optional data
+        to update for the room type
     feature_id : int
         ID of the feature to update
 
@@ -549,7 +553,8 @@ def create_facility(facility: FacilityCreate, db: Session = Depends(get_db)):
         Current database
 
     feature : FacilityCreate
-        FacilityCreate object with all the necessary data to create a new hotel facility
+        FacilityCreate object with all the necessary
+        data to create a new hotel facility
 
     Returns
     -------
