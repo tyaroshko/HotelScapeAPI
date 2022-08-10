@@ -21,12 +21,13 @@ class InvoiceCreate(InvoiceBase):
         orm_mode = True
 
 
-class InvoiceUpdate(InvoiceCreate):
+class InvoiceUpdate(BaseModel):
+    booking_id: Optional[int]
+    client_id: Optional[int]
     payment_method: Optional[PaymentMethod]
     invoice_amount: Optional[float]
     booking_id: Optional[int]
     client_id: Optional[int]
-    ts_issued: Optional[datetime.datetime]
     ts_paid: Optional[datetime.datetime]
 
 

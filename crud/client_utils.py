@@ -23,7 +23,7 @@ def get_client(db: Session, client_id: int):
 
 
 def create_client(db: Session, client: ClientCreate):
-    """Create new booking."""
+    """Create new client."""
     _client = Client(
         first_name=client.first_name,
         last_name=client.last_name,
@@ -38,24 +38,29 @@ def create_client(db: Session, client: ClientCreate):
 
 
 def update_client(db: Session, client_id: int, client: ClientCreate):
-    """Update existing booking."""
+    """Update existing client."""
     _client = get_client(db=db, client_id=client_id)
     if not _client:
         raise HTTPException(
             status_code=404, detail=f"No client found with id {client_id}"
         )
-    _client.first_name = client.first_name
-    _client.last_name = client.last_name
-    _client.email = client.email
-    _client.phone = client.phone
-    _client.address = client.address
+    if client.first_name:
+        _client.first_name = client.first_name
+    if client.last_name:
+        _client.last_name = client.last_name
+    if client.email:
+        _client.email = client.email
+    if client.phone:
+        _client.phone = client.phone
+    if client.address:
+        _client.address = client.address
     db.commit()
     db.refresh(_client)
     return _client
 
 
 def delete_client(db: Session, client_id: int):
-    """Remove existing room."""
+    """Remove existing client."""
     _client = get_client(db=db, client_id=client_id)
     if not _client:
         raise HTTPException(
