@@ -10,14 +10,20 @@ class BookingBase(BaseModel):
     room_id: int
     start_date: datetime.date
     end_date: datetime.date
-    discount_percent: float
-    total_price: float
 
 
 class BookingFull(BookingBase):
     id: int
+    total_price: float
     ts_created: datetime.datetime
     ts_updated: datetime.datetime
+
+    class Config:
+        orm_mode = True
+
+
+class BookingList(BookingBase):
+    id: int
 
     class Config:
         orm_mode = True
@@ -28,11 +34,17 @@ class BookingCreate(BookingBase):
         orm_mode = True
 
 
-class BookingUpdate(BaseModel):
+class BookingFilter(BaseModel):
     client_id: Optional[int]
     room_id: Optional[int]
     start_date: Optional[datetime.date]
     end_date: Optional[datetime.date]
-    discount_percent: Optional[float]
     total_price: Optional[float]
-    ts_updated: datetime.datetime.now
+
+    class Config:
+        orm_mode = True
+
+
+class BookingUpdate(BookingFilter):
+    class Config:
+        orm_mode = True

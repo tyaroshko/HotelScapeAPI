@@ -8,15 +8,13 @@ from models.invoice import PaymentMethod
 
 
 class InvoiceBase(BaseModel):
+    booking_id: int
+    client_id: int
     payment_method: PaymentMethod
     invoice_amount: float
 
 
 class InvoiceCreate(InvoiceBase):
-    booking_id: int
-    client_id: int
-    ts_issued: datetime.datetime
-
     class Config:
         orm_mode = True
 
@@ -28,14 +26,10 @@ class InvoiceUpdate(BaseModel):
     invoice_amount: Optional[float]
     booking_id: Optional[int]
     client_id: Optional[int]
-    ts_paid: Optional[datetime.datetime]
 
 
 class InvoiceFull(InvoiceBase):
-    booking_id: int
-    client_id: int
     ts_issued: datetime.datetime
-    ts_paid: datetime.datetime
 
     class Config:
         orm_mode = True

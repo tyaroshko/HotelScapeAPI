@@ -24,5 +24,4 @@ class Invoice(Base):
     client_id = Column(Integer, ForeignKey("clients.id", ondelete="SET NULL"))
     payment_method = Column(Enum(PaymentMethod))
     invoice_amount = Column(Float, nullable=False)
-    ts_issued = Column(DateTime, default=datetime.datetime.now)
-    ts_paid = Column(DateTime)
+    ts_issued = Column(DateTime, default=datetime.datetime.now())

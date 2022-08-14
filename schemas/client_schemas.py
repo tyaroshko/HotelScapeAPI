@@ -13,18 +13,11 @@ class ClientBase(BaseModel):
 
 
 class ClientFull(ClientBase):
-    id: int
-    phone: str
-    address: Optional[str]
-
     class Config:
         orm_mode = True
 
 
 class ClientCreate(ClientBase):
-    phone: str
-    address: Optional[str]
-
     class Config:
         orm_mode = True
 

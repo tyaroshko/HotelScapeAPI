@@ -1,24 +1,26 @@
 """Schemas for models associated with Room."""
 
 from typing import List, Optional
-
 from pydantic import BaseModel
-
-from models.room import RoomBookingStatus, RoomCleanlinessStatus
+from models.room import RoomAvailabilityStatus, RoomCleanlinessStatus
 
 # Room schemas
 
 
 class RoomBase(BaseModel):
     id: int
-    description: Optional[str] = None
+    room_type_id: int
     floor: int
     facility_id: int
 
 
+class RoomList(RoomBase):
+    class Config:
+        orm_mode = True
+
+
 class RoomFull(RoomBase):
-    room_type_id: int
-    booking_status: RoomBookingStatus
+    booking_status: RoomAvailabilityStatus
     cleanliness_status: RoomCleanlinessStatus
 
     class Config:
@@ -26,8 +28,8 @@ class RoomFull(RoomBase):
 
 
 class RoomCreate(RoomBase):
-    room_type_id: int
-    booking_status: RoomBookingStatus
+    description: Optional[str] = None
+    booking_status: RoomAvailabilityStatus
     cleanliness_status: RoomCleanlinessStatus
 
     class Config:
@@ -35,13 +37,15 @@ class RoomCreate(RoomBase):
 
 
 class RoomFilter(BaseModel):
-    id: Optional[int]
     description: Optional[str]
     room_type_id: Optional[int]
     floor: Optional[int]
     facility_id: Optional[int]
-    booking_status: Optional[RoomBookingStatus]
+    booking_status: Optional[RoomAvailabilityStatus]
     cleanliness_status: Optional[RoomCleanlinessStatus]
+
+    class Config:
+        orm_mode = True
 
 
 class RoomUpdate(BaseModel):
@@ -49,7 +53,7 @@ class RoomUpdate(BaseModel):
     room_type_id: Optional[int]
     floor: Optional[int]
     facility_id: Optional[int]
-    booking_status: Optional[RoomBookingStatus]
+    booking_status: Optional[RoomAvailabilityStatus]
     cleanliness_status: Optional[RoomCleanlinessStatus]
 
 
@@ -64,6 +68,14 @@ class RoomTypeBase(BaseModel):
 
 class RoomTypeFull(RoomTypeBase):
     id: int
+
+    class Config:
+        orm_mode = True
+
+
+class RoomTypeList(BaseModel):
+    id: int
+    name: str
 
     class Config:
         orm_mode = True

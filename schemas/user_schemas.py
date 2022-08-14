@@ -30,3 +30,7 @@ class UserOut(BaseModel):
 
 class SystemUser(UserOut):
     hashed_password: str
+
+
+class ResultSchema(BaseModel):
+    result: str

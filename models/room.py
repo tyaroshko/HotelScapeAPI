@@ -11,33 +11,8 @@ from sqlalchemy import (
     String,
 )
 from sqlalchemy.orm import relationship
-from models.misc_tables import BookingsToRooms, FeaturesToRoomTypes
+from models.misc_tables import FeaturesToRoomTypes
 from db import Base
-
-# NumberOfBeds enum choice
-
-
-class RoomTypeName(str, enum.Enum):
-    """Possible options for RoomTypeName."""
-
-    single = "single"
-    double = "double"
-    triple = "triple"
-    quad = "quad"
-    queen = "queen"
-    king = "king"
-    twin = "twin"
-    hollywood_twin = "hollywood_twin"
-    double_double = "double_double"
-    studio = "studio"
-    suite = "suite"
-    mini_suite = "mini_suite"
-    president_suite = "president_suite"
-    for_extended_stay = "for_extended_stay"
-    connecting_rooms = "connecting_rooms"
-    murphy = "murphy"
-    accessible = "accessible"
-    cabana = "cabana"
 
 
 # Room booking status
@@ -72,9 +47,7 @@ class Room(Base):
     )
     booking_status = Column(Enum(RoomAvailabilityStatus))
     cleanliness_status = Column(Enum(RoomCleanlinessStatus))
-    bookings = relationship(
-        "Booking", secondary=BookingsToRooms, back_populates="rooms"
-    )
+    bookings = relationship("Booking", backref="rooms")
 
 
 class Facility(Base):
@@ -92,7 +65,7 @@ class RoomType(Base):
     __tablename__ = "room_types"
 
     id = Column(Integer, primary_key=True, index=True, unique=True)
-    name = Column(Enum(RoomTypeName))
+    name = Column(String, unique=True, nullable=False)
     capacity = Column(String, nullable=False, default="1")
     price = Column(Float, index=True)
     features = relationship(
