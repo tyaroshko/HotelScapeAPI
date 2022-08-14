@@ -9,7 +9,7 @@ from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
 from auth.utils import ALGORITHM, JWT_SECRET_KEY
-from crud.auth_crud import get_user_by_username
+from crud.auth_crud import get_user_by_username_for_login
 from db import get_db
 from schemas.user_schemas import SystemUser, TokenPayload
 
@@ -37,7 +37,7 @@ def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    user: Union[dict[str, Any], None] = get_user_by_username(
+    user: Union[dict[str, Any], None] = get_user_by_username_for_login(
         db=db, username=token_data.sub
     )
 
