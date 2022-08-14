@@ -1,5 +1,6 @@
-from typing import Any
-from typing import Generator
+import os
+import sys
+from typing import Any, Generator
 
 import pytest
 from fastapi import FastAPI
@@ -7,26 +8,23 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-import sys
-import os
-
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from db import Base
-from db import get_db
 from auth.deps import get_current_user
-from main import app
 from db import (
     POSTGRES_PASSWORD,
     POSTGRES_SERVER,
     POSTGRES_TEST_DATABASE,
     POSTGRES_USER,
+    Base,
+    get_db,
 )
+from main import app
 from routers import (
     auth_routers,
-    room_routers,
-    client_routers,
     booking_routers,
+    client_routers,
     invoice_routers,
+    room_routers,
 )
 
 

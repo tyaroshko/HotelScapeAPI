@@ -64,6 +64,7 @@ def test_feature(client_auth: TestClient):
     response = client_auth.post("/features", json=request_data)
     assert response.status_code == 422
 
+
 def test_facility(client_auth: TestClient):
     # Create
     request_data = {"name": "facility"}
@@ -125,6 +126,7 @@ def test_facility(client_auth: TestClient):
     response = client_auth.post("/facilities", json=request_data)
     assert response.status_code == 422
 
+
 def test_room_type(client_auth: TestClient):
 
     request_data = {"name": "single", "capacity": "5", "price": 50}
@@ -141,7 +143,6 @@ def test_room_type(client_auth: TestClient):
     assert response.status_code == 200
     assert response.json()["name"] == "feature1"
     assert response.json()["id"] == 1
-
 
     response = client_auth.post("/room_types/1/features?feature_id=1")
     assert response.status_code == 200
@@ -172,6 +173,7 @@ def test_room_type(client_auth: TestClient):
     request_data = {}
     response = client_auth.post("/room_types", json=request_data)
     assert response.status_code == 422
+
 
 def test_room(client_auth: TestClient):
     pass

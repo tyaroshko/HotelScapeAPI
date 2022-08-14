@@ -1,6 +1,4 @@
-from http import client
 from fastapi.testclient import TestClient
-import json
 
 
 def test_auth(client_not_auth: TestClient):
