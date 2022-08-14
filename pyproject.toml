@@ -2,7 +2,7 @@
 name = "hotel_api"
 version = "0.1.0"
 description = ""
-authors = ["Taras Yaroshko <taras.yaroshko@ucu.edu.ua>"]
+authors = ["Taras Yaroshko <ty.yaroshko@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -17,6 +17,12 @@ SQLAlchemy-Utils = "^0.38.3"
 python-jose = "^3.3.0"
 python-multipart = "^0.0.5"
 bcrypt = "^3.2.2"
+PyJWT = "^2.4.0"
+pytest = "^7.1.2"
+requests = "^2.28.1"
+black = "^22.6.0"
+mkdocs = "^1.3.1"
+mkdocstrings = "^0.19.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^5.0.1"
