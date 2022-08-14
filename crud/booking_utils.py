@@ -139,7 +139,7 @@ def sort_bookings(db: Session, order: str, order_by: str):
         "room_id": Booking.room_id,
         "total_price": Booking.total_price,
         "ts_created": Booking.ts_created,
-        "ts_updated": Booking.ts_updated
+        "ts_updated": Booking.ts_updated,
     }
     if order_by not in dct.keys():
         raise HTTPException(

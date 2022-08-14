@@ -118,14 +118,8 @@ def get_room_types_with_feature(db: Session, feature_id: int):
     return rooms
 
 
-# def get_rooms_with_feature(db: Session, feature_id: int):
-#     room_types = get_room_types_with_feature(db=db, feature_id=feature_id)
-#     room_types_ids = [room_type.id for room_type in room_types]
-#     rooms = db.query(Room).filter(Room.room_type_id )
-
-
 def get_bookings_of_client(db: Session, client_id: int):
-    """Get all bookings made by a client"""
+    """Get all bookings made by a client."""
     _client = client_utils.get_client(db=db, client_id=client_id)
     if not _client:
         raise HTTPException(
