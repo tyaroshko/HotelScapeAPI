@@ -1,12 +1,12 @@
 """CRUD functions for Invoice."""
 
+import datetime
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from crud import booking_utils, client_utils
 from models.invoice import Invoice
 from schemas.invoice_schemas import InvoiceCreate, InvoiceUpdate
-import datetime
 
 
 def get_invoices(db: Session, skip: int = 0, limit: int = 100):
@@ -36,12 +36,13 @@ def create_invoice(db: Session, invoice: InvoiceCreate):
             status_code=404,
             detail=f"No client with id {invoice.client_id} found",
         )
+    _booking = booking_utils.get_booking(db=db, booking_id=invoice.booking_id)
     _invoice = Invoice(
         booking_id=invoice.booking_id,
-        client_id=invoice.client_id,
+        client_id=_booking.client_id,
         payment_method=invoice.payment_method,
-        invoice_amount=invoice.invoice_amount,
-        ts_issued=datetime.datetime.now,
+        invoice_amount=_booking.total_price,
+        ts_issued=datetime.datetime.now(),
     )
     db.add(_invoice)
     db.commit()
@@ -90,4 +91,4 @@ def delete_invoice(db: Session, invoice_id: int):
         )
     db.delete(_invoice)
     db.commit()
-    return f"Successfully deleted invoice with id {invoice_id}"
+    return {"result": f"Successfully deleted invoice with id {invoice_id}"}

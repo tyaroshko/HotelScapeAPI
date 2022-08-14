@@ -9,7 +9,7 @@ from models.user import User
 from schemas.user_schemas import UserAuth
 
 
-def get_user_by_id(db: Session, user_id: UUID):
+def get_user_by_id_for_login(db: Session, user_id: UUID):
     """Get user by id."""
     _user = db.query(User).filter(User.id == user_id).first()
     if not _user:
@@ -19,7 +19,7 @@ def get_user_by_id(db: Session, user_id: UUID):
     return _user
 
 
-def get_user_by_username(db: Session, username: str):
+def get_user_by_username_for_login(db: Session, username: str):
     """Get user by username."""
     _user = db.query(User).filter(User.username == username).first()
     if not _user:
@@ -29,17 +29,25 @@ def get_user_by_username(db: Session, username: str):
     return _user
 
 
-def get_users(db: Session, skip: int = 0, limit: int = 100):
-    """Get all users."""
-    pass
+def get_user_by_username_for_signup(db: Session, username: str):
+    """Get user by username."""
+    _user = db.query(User).filter(User.username == username).first()
+    if _user:
+        raise HTTPException(
+            status_code=400,
+            detail=f"User with username {username} already exists",
+        )
+    return _user
 
 
 def create_user(db: Session, user: UserAuth):
     """Create new user."""
-    user_exists = get_user_by_username(db=db, username=user.username)
+    user_exists = get_user_by_username_for_signup(
+        db=db, username=user.username
+    )
     if user_exists:
         raise HTTPException(
-            status=400,
+            status_code=400,
             detail=f"User with username {user.username} already exists",
         )
     _user = User(

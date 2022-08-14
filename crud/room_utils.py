@@ -1,16 +1,23 @@
 """CRUD functions for Room, Facility, Feature and RoomType."""
+
+import datetime
+from typing import Optional
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from models.booking import Booking
 
 from models.room import Facility, Feature, Room, RoomType
+from crud.client_utils import get_client
 from schemas.room_schemas import (
     FacilityCreate,
     FeatureCreate,
     RoomCreate,
+    RoomFilter,
     RoomTypeCreate,
     RoomTypeUpdate,
     RoomUpdate,
 )
+
 
 # Room CRUD
 
@@ -41,6 +48,11 @@ def create_room(db: Session, room: RoomCreate):
         raise HTTPException(
             status_code=404,
             detail=f"No facility with id {room.facility_id} found",
+        )
+    _room = db.query(Room).filter(Room.id == room.id).first()
+    if _room:
+        raise HTTPException(
+            status_code=400, detail=f"Room with id {room.id} already exists"
         )
     _room = Room(
         id=room.id,
@@ -100,7 +112,7 @@ def delete_room(db: Session, room_id: int):
         )
     db.delete(_room)
     db.commit()
-    return f"Successfully deleted room with id {room_id}"
+    return {"result": f"Successfully deleted room with id {room_id}"}
 
 
 def get_room_booking_status(db: Session, room_id: int):
@@ -110,7 +122,7 @@ def get_room_booking_status(db: Session, room_id: int):
         raise HTTPException(
             status_code=404, detail=f"No room found with id {room_id}"
         )
-    return _room.booking_status
+    return {"result": f"{_room.booking_status}"}
 
 
 def get_room_cleanliness_status(db: Session, room_id: int):
@@ -120,13 +132,84 @@ def get_room_cleanliness_status(db: Session, room_id: int):
         raise HTTPException(
             status_code=404, detail=f"No room found with id {room_id}"
         )
-    return _room.cleanliness_status
+    return {"result": f"{_room.cleanliness_status}"}
+
+
+def filter_rooms(db: Session, room: Optional[RoomFilter]):
+    """Filter rooms by its parameters."""
+    query = db.query(Room)
+    if room.description:
+        query = query.filter(Room.description == room.description)
+    if room.room_type_id:
+        query = query.filter(Room.room_type_id == room.room_type_id)
+    if room.floor:
+        query = query.filter(Room.floor == room.floor)
+    if room.facility_id:
+        query = query.filter(Room.facility_id == room.facility_id)
+    if room.booking_status:
+        query = query.filter(Room.booking_status == room.booking_status)
+    if room.cleanliness_status:
+        query = query.filter(
+            Room.cleanliness_status == room.cleanliness_status
+        )
+    filtered_rooms = query.all()
+    return filtered_rooms
+
+
+def sort_rooms(db: Session, order: str, order_by: str):
+    """Sort rooms by its properties."""
+    dct = {
+        "id": Room.id,
+        "room_type_id": Room.room_type_id,
+        "floor": Room.floor,
+        "facility_id": Room.facility_id,
+        "booking_status": Room.booking_status,
+        "cleanliness_status": Room.cleanliness_status,
+    }
+    if order_by not in dct.keys():
+        raise HTTPException(
+            status_code=400, detail="Such order_by is not supported"
+        )
+    if order == "desc":
+        sorted_query = db.query(Room).order_by(dct[order_by].desc())
+    elif order == "asc":
+        sorted_query = db.query(Room).order_by(dct[order_by].asc())
+    else:
+        raise HTTPException(
+            status_code=400, detail="Such order is not supported"
+        )
+    sorted_rooms = sorted_query.all()
+    return sorted_rooms
+
+
+def get_room_guest_now(db: Session, room_id: int):
+    """Get current room's guest."""
+    _room = get_room(db=db, room_id=room_id)
+    if not _room:
+        raise HTTPException(
+            status_code=404, detail=f"No room found with id {room_id}"
+        )
+    _booking = (
+        db.query(Booking)
+        .filter(
+            Booking.room_id == room_id,
+            Booking.start_date <= datetime.date.today(),
+            Booking.end_date >= datetime.date.today(),
+        )
+        .first()
+    )
+    if not _booking:
+        raise HTTPException(
+            status_code=400, detail=f"Room with id {room_id} is currently free"
+        )
+    _client = get_client(db=db, client_id=_booking.client_id)
+    return _client
 
 
 # Room types CRUD
 
 
-def get_room_types(db: Session, skip: int = 0, limit: int = 0):
+def get_room_types(db: Session, skip: int = 0, limit: int = 100):
     """Get all room types."""
     return db.query(RoomType).offset(skip).limit(limit).all()
 
@@ -184,10 +267,58 @@ def delete_room_type(db: Session, room_type_id: int):
         )
     db.delete(_room_type)
     db.commit()
-    return f"Successfully deleted room type with id {room_type_id}"
+    return {"result": f"Successfully deleted room type with id {room_type_id}"}
+
+
+def filter_room_types_by_price(db: Session, operator: str, value: float):
+    """Filter room types by price."""
+    dct = {
+        ">=": RoomType.price >= value,
+        "<=": RoomType.price <= value,
+        "==": RoomType.price == value,
+        "!=": RoomType.price != value,
+        ">": RoomType.price > value,
+        "<": RoomType.price < value,
+    }
+    if operator not in dct.keys():
+        raise HTTPException(
+            status_code=400, detail="Such operator is not supported"
+        )
+    filtered_room_types = db.query(RoomType).filter(dct[operator]).all()
+    return filtered_room_types
+
+
+def sort_room_types(db: Session, order: str, order_by: str):
+    """Sort room types by its properties."""
+    dct = {
+        "id": RoomType.id,
+        "name": RoomType.name,
+        "price": RoomType.price,
+        "capacity": RoomType.capacity,
+    }
+    if order_by not in dct.keys():
+        raise HTTPException(
+            status_code=400, detail="Such order_by is not supported"
+        )
+    if order == "desc":
+        sorted_query = db.query(Room).order_by(dct[order_by].desc())
+    elif order == "asc":
+        sorted_query = db.query(Room).order_by(dct[order_by].asc())
+    else:
+        raise HTTPException(
+            status_code=400, detail="Such order is not supported"
+        )
+    sorted_room_types = sorted_query.all()
+    return sorted_room_types
 
 
 # Room features CRUD
+
+
+def get_features(db: Session, skip: int = 0, limit: int = 100):
+    """Get all features."""
+    _features = db.query(Feature).offset(skip).limit(limit).all()
+    return _features
 
 
 def get_feature(db: Session, feature_id: int):
@@ -232,7 +363,7 @@ def delete_feature(db: Session, feature_id: int):
         )
     db.delete(_feature)
     db.commit()
-    return f"Successfully deleted feature with id {feature_id}"
+    return {"result": f"Successfully deleted feature with id {feature_id}"}
 
 
 # Facility CRUD
@@ -250,6 +381,7 @@ def get_facility(db: Session, facility_id: int):
         raise HTTPException(
             status_code=404, detail=f"No facility found with id {facility_id}"
         )
+    return _facility
 
 
 def create_facility(db: Session, facility: FacilityCreate):
@@ -284,4 +416,4 @@ def delete_facility(db: Session, facility_id: int):
         )
     db.delete(_facility)
     db.commit()
-    return f"Successfully deleted facility with id {facility_id}"
+    return {"result": f"Successfully deleted facility with id {facility_id}"}

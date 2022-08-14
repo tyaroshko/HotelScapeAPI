@@ -68,4 +68,4 @@ def delete_client(db: Session, client_id: int):
         )
     db.delete(_client)
     db.commit()
-    return f"Successfully deleted client with id {client_id}"
+    return {"result": f"Successfully deleted client with id {client_id}"}
