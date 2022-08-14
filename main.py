@@ -1,10 +1,15 @@
 from fastapi import FastAPI
 
-from routers import (auth_routers, booking_routers, client_routers,
-                     invoice_routers, room_routers)
+from routers import (
+    auth_routers,
+    booking_routers,
+    client_routers,
+    invoice_routers,
+    room_routers,
+)
 
 app = FastAPI(
-    title="Hotel Administration API",
+    title="HotelScape",
     description="API for hotel management",
     version="0.0.1",
 )
