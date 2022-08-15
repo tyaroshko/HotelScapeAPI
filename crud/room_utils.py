@@ -417,3 +417,36 @@ def delete_facility(db: Session, facility_id: int):
     db.delete(_facility)
     db.commit()
     return {"result": f"Successfully deleted facility with id {facility_id}"}
+
+
+def check_room_availability_by_date(
+    start_date: datetime.date,
+    end_date: datetime.date,
+    room_id: int,
+    db: Session,
+):
+    """Check if room is free on a given date."""
+    _bookings = db.query(Booking).filter(Booking.room_id == room_id).all()
+    if not _bookings:
+        return {"result": "vacant"}
+    for _booking in _bookings:
+        if (
+            (
+                _booking.start_date <= start_date
+                and _booking.end_date >= end_date
+            )
+            or (
+                _booking.start_date >= start_date
+                and _booking.end_date <= end_date
+            )
+            or (
+                _booking.start_date >= start_date
+                and _booking.start_date <= end_date
+            )
+            or (
+                _booking.end_date >= start_date
+                and _booking.end_date <= end_date
+            )
+        ):
+            return {"result": "booked"}
+    return {"result": "vacant"}

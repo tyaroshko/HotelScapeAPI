@@ -44,6 +44,14 @@ def create_booking(db: Session, booking: BookingCreate):
         or booking.end_date < booking.start_date
     ):
         raise HTTPException(status_code=400, detail="Incorrect date")
+    response = room_utils.check_room_availability_by_date(
+        start_date=booking.start_date,
+        end_date=booking.end_date,
+        room_id=booking.room_id,
+        db=db,
+    )
+    if response["result"] == "booked":
+        raise HTTPException(status_code=400, detail="Room is booked")
     length_of_stay = (booking.end_date - booking.start_date).days
     _room = room_utils.get_room(db=db, room_id=booking.room_id)
     _room_type = room_utils.get_room_type(
