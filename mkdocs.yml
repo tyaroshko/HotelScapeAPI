@@ -13,4 +13,3 @@ theme:
     accent: deep purple
 plugins:
   - search
-  - mkdocstrings
