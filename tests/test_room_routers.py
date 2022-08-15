@@ -1,3 +1,5 @@
+import re
+from urllib import request
 from fastapi.testclient import TestClient
 
 
@@ -176,4 +178,43 @@ def test_room_type(client_auth: TestClient):
 
 
 def test_room(client_auth: TestClient):
-    pass
+    request_data = {"name": "facility"}
+    response = client_auth.post("/facilities", json=request_data)
+    assert response.status_code == 200
+    assert response.json()["name"] == "facility"
+    assert response.json()["id"] == 1
+
+    request_data = {"name": "single", "capacity": "5", "price": 50}
+    response = client_auth.post("/room_types", json=request_data)
+    assert response.status_code == 200
+    assert response.json()["id"] == 1
+    assert response.json()["name"] == "single"
+    assert response.json()["capacity"] == "5"
+    assert response.json()["price"] == 50
+    assert isinstance(response.json()["id"], int)
+
+    request_data = {"id": 100, "room_type_id": 2, "facility_id": 2, "floor": 2, "booking_status": "occupied", "cleanliness_status": "clean"}
+    response = client_auth.post("/rooms", json=request_data)
+    assert response.status_code == 404
+    assert response.json() == {"detail": "No room type found with id 2"}
+
+    request_data = {"id": 100, "room_type_id": 1, "facility_id": 1, "floor": 2, "booking_status": "occupied", "cleanliness_status": "clean"}
+    response = client_auth.post("/rooms", json=request_data)
+    assert response.status_code == 200
+    assert response.json()["id"] == request_data["id"]
+    assert response.json()["room_type_id"] == request_data["room_type_id"]
+    assert response.json()["facility_id"] == request_data["facility_id"]
+    assert response.json()["floor"] == request_data["floor"]
+    assert response.json()["booking_status"] == request_data["booking_status"]
+    assert response.json()["cleanliness_status"] == request_data["cleanliness_status"]
+    assert isinstance(response.json()["id"], int)
+
+    request_data = {"id": 100, "room_type_id": 1, "facility_id": 1, "floor": 2, "booking_status": "occupied", "cleanliness_status": "clean"}
+    response = client_auth.post("/rooms", json=request_data)
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Room with id 100 already exists"}
+
+    request_data = {"id": 150, "room_type_id": 1, "facility_id": 1, "floor": 2, "booking_status": "clean", "cleanliness_status": "clean"}
+    response = client_auth.post("/rooms", json=request_data)
+    assert response.status_code == 422
+
