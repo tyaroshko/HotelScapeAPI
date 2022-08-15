@@ -1,21 +1,17 @@
 """Util function to help with user authentification."""
 import os
 from datetime import datetime, timedelta
-from pathlib import Path
 from typing import Any, Union
 
 import jwt
-from dotenv import load_dotenv
 from passlib.context import CryptContext
 
-env_path = Path(".") / ".env"
-load_dotenv(dotenv_path=env_path)
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 60  # 60 minutes
 REFRESH_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
-ALGORITHM = os.getenv("ALGORITHM")
-JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
-JWT_REFRESH_SECRET_KEY = os.getenv("JWT_REFRESH_SECRET_KEY")
+ALGORITHM = os.environ["ALGORITHM"]
+JWT_SECRET_KEY = os.environ["JWT_SECRET_KEY"]
+JWT_REFRESH_SECRET_KEY = os.environ["JWT_REFRESH_SECRET_KEY"]
 
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
