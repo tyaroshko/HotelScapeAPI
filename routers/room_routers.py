@@ -1,4 +1,5 @@
 """Endpoints for Room, Facility, Feature and RoomType."""
+import datetime
 from typing import List
 
 from fastapi import APIRouter, Depends
@@ -1032,3 +1033,20 @@ def sort_room_types(
                 list of sorted room types
     """
     return room_utils.sort_room_types(db=db, order=order, order_by=order_by)
+
+
+@router.get(
+    "/rooms/{room_id}/availability",
+    response_model=ResultSchema,
+    tags=["room"],
+    summary="Check room availability by date",
+)
+def check_room_availability_by_date(
+    start_date: datetime.date,
+    end_date: datetime.date,
+    room_id: int,
+    db: Session = Depends(get_db),
+):
+    return room_utils.check_room_availability_by_date(
+        start_date=start_date, end_date=end_date, room_id=room_id, db=db
+    )

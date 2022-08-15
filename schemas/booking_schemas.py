@@ -11,6 +11,9 @@ class BookingBase(BaseModel):
     start_date: datetime.date
     end_date: datetime.date
 
+class BookingBaseInfo(BookingBase):
+    class Config:
+        orm_mode = True
 
 class BookingFull(BookingBase):
     id: int

@@ -5,10 +5,10 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from crud import client_utils
+from crud import client_utils, misc_crud
 from db import get_db
 from schemas.client_schemas import ClientCreate, ClientFull, ClientUpdate
-from schemas.booking_schemas import BookingBase
+from schemas.booking_schemas import BookingBaseInfo
 from schemas.user_schemas import ResultSchema
 from auth.deps import get_current_user
 from schemas.user_schemas import UserAuth
@@ -170,7 +170,7 @@ def delete_client(
     "/clients/{client_id}/bookings",
     summary="Get bookings made by a client",
     tags=["client"],
-    response_model=List[BookingBase],
+    response_model=List[BookingBaseInfo],
 )
 def get_bookings_of_client(
     client_id: int,
@@ -188,6 +188,6 @@ def get_bookings_of_client(
 
         Returns:
             client_bookings : List[BookingFull]
-                string with info about successful deletion
+                all bookings from a client
     """
-    return client_utils.delete_client(client_id=client_id, db=db)
+    return misc_crud.get_bookings_of_client(client_id=client_id, db=db)
