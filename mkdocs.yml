@@ -2,9 +2,9 @@ site_name: HotelScape
 site_url: https://example.com/
 nav:
     - Home: index.md
+     - About: about.md
     - Installation: installation.md
-    - About: about.md
-    - Project layout: project_layout.md
+    - Project Layout: project_layout.md
 theme:
   name: "material"
   palette:

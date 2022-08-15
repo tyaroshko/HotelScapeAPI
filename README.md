@@ -5,7 +5,7 @@ HotelScape is created for hotel administrators and receptionists who want to eff
 Full documentation is available here: https://tyaroshko.github.io/hotel-api/
 
 ## Database Design
-[Database Design](docs/img/database_design.png)
+![Database Design](docs/img/database_design.png)
 ## Software Requirements
 * Python3
 * PostgreSQL and GUI tool for viewing the databases<br/>(pgAdmin4, OmniDB, DBeaver or any other of your choice)

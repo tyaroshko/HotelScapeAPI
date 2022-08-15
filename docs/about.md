@@ -1,3 +1,3 @@
-# Fuit longo
+## Database Design
 
-## Spectacula viae iacet in brevis vixque
+![Database Design](https://raw.githubusercontent.com/tyaroshko/hotel-api/add-all-models/docs/img/database_design.png)
