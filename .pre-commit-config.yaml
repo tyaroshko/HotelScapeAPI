@@ -1,0 +1,25 @@
+repos:
+  - repo: https://github.com/psf/black
+    rev: 22.6.0
+    hooks:
+      - id: black
+        language_version: python3.9
+        exclude: ^migrations/
+  - repo: https://github.com/pycqa/pydocstyle
+    rev: 4.0.0
+    hooks:
+      - id: pydocstyle
+        exclude: ^migrations/
+        args:
+        - --ignore=D101,D106,D203
+  - repo: https://github.com/PyCQA/flake8
+    rev: 5.0.1
+    hooks:
+      - id: flake8
+        exclude: ^migrations/
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        name: isort (python)
+        exclude: ^migrations/
