@@ -27,6 +27,7 @@ jobs:
         run: poetry install
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       - name: Run tests
+        run: pip install passlib
         env:
           POSTGRES_USER: user
           POSTGRES_PASSWORD: pasword
